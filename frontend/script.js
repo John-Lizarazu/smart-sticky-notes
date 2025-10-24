@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   groupBtn.onclick = async () => {
   alert("✨ Grouping your notes — please wait...");
   try {
-    const res = await fetch(`${API_BASE}/group`, {
+    const res = await fetch(`${API_BASE}/notes/group`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ notes }),
