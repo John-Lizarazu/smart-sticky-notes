@@ -12,21 +12,20 @@ Resources:
       - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get all items from
-        a DynamoDB table.
+      Description: HTTP GET to list all notes from DynamoDB
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
             Ref: SampleTable
       Environment:
         Variables:
-          SAMPLE_TABLE:
+          TABLE_NAME:
             Ref: SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /notes
             Method: GET
       CodeUri: getAllItemsFunction
     Metadata:
@@ -40,21 +39,20 @@ Resources:
       - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get one item by
-        id from a DynamoDB table.
+      Description: HTTP GET to fetch one note by id
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
             Ref: SampleTable
       Environment:
         Variables:
-          SAMPLE_TABLE:
+          TABLE_NAME:
             Ref: SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /{id}
+            Path: /notes/{id}
             Method: GET
       CodeUri: getByIdFunction
     Metadata:
@@ -68,21 +66,20 @@ Resources:
       - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP post method to add one item to
-        a DynamoDB table.
+      Description: HTTP POST to create a note in DynamoDB
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
             Ref: SampleTable
       Environment:
         Variables:
-          SAMPLE_TABLE:
+          TABLE_NAME:
             Ref: SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /notes
             Method: POST
       CodeUri: putItemFunction
     Metadata:

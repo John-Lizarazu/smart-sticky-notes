@@ -1,103 +1,82 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  smart-notes-api
+Description: smart-notes-api
 Transform:
-- AWS::Serverless-2016-10-31
+  - AWS::Serverless-2016-10-31
 
-# Resources declares the AWS resources that you want to include in the stack
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
-  # This is a Lambda function config associated with the source code: get-all-items.js
+  # GET /notes
   getAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-all-items.getAllItemsHandler
       Runtime: nodejs20.x
       Architectures:
-      - x86_64
+        - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get all items 
-        from a DynamoDB table.
+      Description: HTTP GET to list all notes from DynamoDB
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
       Environment:
         Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          TABLE_NAME: !Ref SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /notes
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  # This is a Lambda function config associated with the source code: get-by-id.js
+  # GET /notes/{id}
   getByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-by-id.getByIdHandler
       Runtime: nodejs20.x
       Architectures:
-      - x86_64
+        - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP get method to get one item 
-        by id from a DynamoDB table.
+      Description: HTTP GET to fetch one note by id
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
       Environment:
         Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          TABLE_NAME: !Ref SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /{id}
+            Path: /notes/{id}
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  # This is a Lambda function config associated with the source code: put-item.js
+  # POST /notes
   putItemFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/put-item.putItemHandler
       Runtime: nodejs20.x
       Architectures:
-      - x86_64
+        - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: A simple example includes a HTTP post method to add one item 
-        to a DynamoDB table.
+      Description: HTTP POST to create a note in DynamoDB
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SampleTable
       Environment:
         Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          TABLE_NAME: !Ref SampleTable
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /notes
             Method: POST
-  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 
-  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
+  # DynamoDB (kept as-is from your template)
   SampleTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -108,6 +87,7 @@ Resources:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
 
+  # (kept from your template)
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -115,18 +95,21 @@ Resources:
         Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
       ResourceQuery:
         Type: CLOUDFORMATION_STACK_1_0
+
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
       ResourceGroupName:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
+
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     LoggingConfig:
       LogFormat: JSON
+
