@@ -1,17 +1,17 @@
-AWSTemplateFormatVersion: 2010-09-09
 Description: smart-notes-api
 Transform:
   - AWS::Serverless-2016-10-31
 
 Resources:
-  # GET /notes
+  # ----------------------------------------------------------
+  # GET /notes – List all notes from DynamoDB
+  # ----------------------------------------------------------
   getAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-all-items.getAllItemsHandler
       Runtime: nodejs20.x
-      Architectures:
-        - x86_64
+      Architectures: [x86_64]
       MemorySize: 128
       Timeout: 100
       Description: HTTP GET to list all notes from DynamoDB
@@ -28,17 +28,18 @@ Resources:
             Path: /notes
             Method: GET
 
-  # GET /notes/{id}
+  # ----------------------------------------------------------
+  # GET /notes/{id} – Fetch one note by ID
+  # ----------------------------------------------------------
   getByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-by-id.getByIdHandler
       Runtime: nodejs20.x
-      Architectures:
-        - x86_64
+      Architectures: [x86_64]
       MemorySize: 128
       Timeout: 100
-      Description: HTTP GET to fetch one note by id
+      Description: HTTP GET to fetch one note by ID
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
@@ -52,23 +53,36 @@ Resources:
             Path: /notes/{id}
             Method: GET
 
-  # POST /notes
+  # ----------------------------------------------------------
+  # POST /notes – Create a note, embed, and index in AOSS
+  # ----------------------------------------------------------
   putItemFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/put-item.putItemHandler
       Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
-      Description: HTTP POST to create a note in DynamoDB
+      Architectures: [x86_64]
+      MemorySize: 256
+      Timeout: 120
+      Description: HTTP POST to create a note in DynamoDB and index to OpenSearch
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - "bedrock:InvokeModel"
+              Resource:
+                - "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
+            - Effect: Allow
+              Action:
+                - "aoss:APIAccessAll"
+              Resource: "*"
       Environment:
         Variables:
           TABLE_NAME: !Ref SampleTable
+          OPENSEARCH_ENDPOINT: "https://https://t4io7jsfjap0nkgv6u4g.us-east-1.aoss.amazonaws.com" # Replace with real endpoint
+          OPENSEARCH_INDEX: "notes"
       Events:
         Api:
           Type: Api
@@ -76,7 +90,46 @@ Resources:
             Path: /notes
             Method: POST
 
-  # DynamoDB (kept as-is from your template)
+  # ----------------------------------------------------------
+  # POST /notes/group – Group notes via Bedrock Nova reasoning
+  # ----------------------------------------------------------
+  groupNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/group-notes.groupNotesHandler
+      Runtime: nodejs20.x
+      Architectures: [x86_64]
+      MemorySize: 256
+      Timeout: 120
+      Description: Suggest groupings for notes via Bedrock reasoning (Nova)
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref SampleTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - "bedrock:InvokeModel"
+              Resource:
+                - "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-pro"
+            - Effect: Allow
+              Action:
+                - "aoss:APIAccessAll"
+              Resource: "*"
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SampleTable
+          OPENSEARCH_ENDPOINT: "https://https://t4io7jsfjap0nkgv6u4g.us-east-1.aoss.amazonaws.com" # Replace with real endpoint
+          OPENSEARCH_INDEX: "notes"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /notes/group
+            Method: POST
+
+  # ----------------------------------------------------------
+  # DynamoDB table
+  # ----------------------------------------------------------
   SampleTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -87,7 +140,9 @@ Resources:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
 
-  # (kept from your template)
+  # ----------------------------------------------------------
+  # CloudWatch monitoring
+  # ----------------------------------------------------------
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -99,9 +154,8 @@ Resources:
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
-      ResourceGroupName:
-        Ref: ApplicationResourceGroup
-      AutoConfigurationEnabled: 'true'
+      ResourceGroupName: !Ref ApplicationResourceGroup
+      AutoConfigurationEnabled: true
 
 Outputs:
   WebEndpoint:

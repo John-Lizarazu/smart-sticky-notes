@@ -5,12 +5,14 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.917.0",
     "@aws-sdk/client-dynamodb": "^3.916.0",
-    "@aws-sdk/lib-dynamodb": "^3.916.0"
+    "@aws-sdk/credential-provider-node": "^3.917.0",
+    "@aws-sdk/lib-dynamodb": "^3.916.0",
+    "@opensearch-project/opensearch": "^3.5.1"
   },
   "scripts": {
     "build": "sam build",
     "deploy": "sam deploy"
   }
 }
-

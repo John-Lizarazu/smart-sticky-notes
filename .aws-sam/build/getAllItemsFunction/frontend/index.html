@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Sticky Notes</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🩵 Smart Sticky Notes</h1>
+    <p class="tagline">Modern notes that think with you.</p>
+  </header>
+
+  <main id="notes-container">
+    <!-- Sticky notes appear here -->
+  </main>
+
+  <div class="floating-buttons">
+    <button id="groupBtn">✨ Group Notes</button>
+    <button id="digestBtn">☀️ Daily Digest</button>
+    <button id="addBtn">＋</button>
+  </div>
+
+  <!-- Note Modal -->
+  <div class="modal hidden" id="noteModal">
+    <div class="modal-content">
+      <textarea id="noteInput" placeholder="Type your thought..."></textarea>
+      <div class="modal-actions">
+        <button id="saveNote">Save</button>
+        <button id="cancelNote">Cancel</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

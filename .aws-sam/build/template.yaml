@@ -1,4 +1,3 @@
-AWSTemplateFormatVersion: '2010-09-09'
 Description: smart-notes-api
 Transform:
 - AWS::Serverless-2016-10-31
@@ -39,7 +38,7 @@ Resources:
       - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: HTTP GET to fetch one note by id
+      Description: HTTP GET to fetch one note by ID
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
@@ -64,17 +63,29 @@ Resources:
       Runtime: nodejs20.x
       Architectures:
       - x86_64
-      MemorySize: 128
-      Timeout: 100
-      Description: HTTP POST to create a note in DynamoDB
+      MemorySize: 256
+      Timeout: 120
+      Description: HTTP POST to create a note in DynamoDB and index to OpenSearch
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
             Ref: SampleTable
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource:
+          - arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1
+        - Effect: Allow
+          Action:
+          - aoss:APIAccessAll
+          Resource: '*'
       Environment:
         Variables:
           TABLE_NAME:
             Ref: SampleTable
+          OPENSEARCH_ENDPOINT: https://https://t4io7jsfjap0nkgv6u4g.us-east-1.aoss.amazonaws.com
+          OPENSEARCH_INDEX: notes
       Events:
         Api:
           Type: Api
@@ -84,6 +95,45 @@ Resources:
       CodeUri: putItemFunction
     Metadata:
       SamResourceId: putItemFunction
+  groupNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/group-notes.groupNotesHandler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+      MemorySize: 256
+      Timeout: 120
+      Description: Suggest groupings for notes via Bedrock reasoning (Nova)
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: SampleTable
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource:
+          - arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-pro
+        - Effect: Allow
+          Action:
+          - aoss:APIAccessAll
+          Resource: '*'
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: SampleTable
+          OPENSEARCH_ENDPOINT: https://https://t4io7jsfjap0nkgv6u4g.us-east-1.aoss.amazonaws.com
+          OPENSEARCH_INDEX: notes
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /notes/group
+            Method: POST
+      CodeUri: groupNotesFunction
+    Metadata:
+      SamResourceId: groupNotesFunction
   SampleTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -105,7 +155,7 @@ Resources:
     Properties:
       ResourceGroupName:
         Ref: ApplicationResourceGroup
-      AutoConfigurationEnabled: 'true'
+      AutoConfigurationEnabled: true
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage

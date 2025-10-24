@@ -5,8 +5,8 @@ codeuri = "/home/cloudshell-user/smart-sticky-notes/smart-notes-api"
 runtime = "nodejs20.x"
 architecture = "x86_64"
 handler = "src/handlers/get-all-items.getAllItemsHandler"
-manifest_hash = "051c4c887f4fb6461c62da34c6761179"
+manifest_hash = "d0733d941364b5a62c8eae4c0549acc4"
 packagetype = "Zip"
-functions = ["getAllItemsFunction", "getByIdFunction", "putItemFunction"]
+functions = ["getAllItemsFunction", "getByIdFunction", "putItemFunction", "groupNotesFunction"]
 
 [layer_build_definitions]
