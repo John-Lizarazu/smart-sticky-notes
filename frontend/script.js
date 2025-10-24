@@ -121,7 +121,34 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // === PLACEHOLDER BUTTONS ===
-  groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
+  groupBtn.onclick = async () => {
+  alert("✨ Grouping your notes — please wait...");
+  try {
+    const res = await fetch(`${API_BASE}/group`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notes }),
+    });
+    const data = await res.json();
+    console.log("🤖 AI Grouping Result:", data);
+
+    // Display the grouped notes neatly in the console for now
+    if (data.groups) {
+      console.log("📁 Grouped Notes:");
+      data.groups.forEach((group, i) => {
+        console.log(`\nGroup ${i + 1}: ${group.title}`);
+        group.items.forEach((note) => console.log(`- ${note}`));
+      });
+      alert("✅ Grouping complete! Check the console for results.");
+    } else {
+      alert("⚠️ AI grouping response didn’t contain groups. Check CloudWatch logs.");
+    }
+  } catch (err) {
+    console.error("Group Notes error:", err);
+    alert("❌ Failed to group notes — check console for details.");
+  }
+};
+
   digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
   // === INITIAL LOAD ===
