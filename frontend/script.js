@@ -98,8 +98,27 @@ async function deleteNote(id) {
   }
 }
 
-// === MODAL CONTROLS ===
-addBtn.onclick = () => {
-  modal.classList.remove("hidden");
-  noteInput.focus();
-}
+// === MODAL + BUTTON CONTROLS ===
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Modal ---
+  addBtn.onclick = () => {
+    modal.classList.remove("hidden");
+    noteInput.focus();
+  };
+
+  cancelBtn.onclick = () => {
+    modal.classList.add("hidden");
+    noteInput.value = "";
+  };
+
+  saveBtn.onclick = async () => {
+    await saveNoteToBackend();
+  };
+
+  // --- Group + Digest Buttons ---
+  groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
+  digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
+
+  // --- Initial Data Load ---
+  loadNotes();
+});
