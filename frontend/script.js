@@ -88,6 +88,34 @@ document.addEventListener("DOMContentLoaded", () => {
   loadNotes(); // fetch notes from your API Gateway backend
 });
 
+// --- Modal Controls ---
+const addBtn = document.getElementById("addBtn");
+const modal = document.getElementById("noteModal");
+const cancelNote = document.getElementById("cancelNote");
+const saveNote = document.getElementById("saveNote");
+
+addBtn.addEventListener("click", () => {
+  modal.classList.remove("hidden");
+});
+
+cancelNote.addEventListener("click", () => {
+  modal.classList.add("hidden");
+});
+
+saveNote.addEventListener("click", async () => {
+  await addNote();  // calls the addNote() function we defined earlier
+  modal.classList.add("hidden");
+});
+
+document.getElementById("noteInput").addEventListener("keydown", async (e) => {
+  if (e.key === "Escape") modal.classList.add("hidden");
+  if (e.key === "Enter" && e.shiftKey) {
+    e.preventDefault();
+    await addNote();
+    modal.classList.add("hidden");
+  }
+});
+
 groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
 digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
