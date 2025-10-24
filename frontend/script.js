@@ -1,5 +1,5 @@
 // === GLOBAL ELEMENTS ===
-const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod/notes/group";
+const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- UI ELEMENTS ---
