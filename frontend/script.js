@@ -52,7 +52,6 @@ saveBtn.onclick = () => {
   }
 };
 
-// ✅ Replace this with your actual API Gateway URL
 const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
 
 // Create a new note
@@ -84,6 +83,10 @@ async function loadNotes() {
   renderNotes(data);
 }
 
+// Load all notes when the page first loads
+document.addEventListener("DOMContentLoaded", () => {
+  loadNotes(); // fetch notes from your API Gateway backend
+});
 
 groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
 digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
