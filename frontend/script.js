@@ -52,6 +52,39 @@ saveBtn.onclick = () => {
   }
 };
 
+// ✅ Replace this with your actual API Gateway URL
+const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
+
+// Create a new note
+async function addNote() {
+  const noteText = document.getElementById("noteInput").value.trim();
+  if (!noteText) return alert("Please write something!");
+
+  const note = {
+    id: Date.now().toString(),
+    text: noteText,
+    created_at: new Date().toISOString(),
+    user: "demo-user",
+  };
+
+  await fetch(`${API_BASE}/notes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(note),
+  });
+
+  document.getElementById("noteInput").value = "";
+  await loadNotes();
+}
+
+// Get all notes
+async function loadNotes() {
+  const res = await fetch(`${API_BASE}/notes`);
+  const data = await res.json();
+  renderNotes(data);
+}
+
+
 groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
 digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
