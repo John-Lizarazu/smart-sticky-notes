@@ -11,99 +11,95 @@ const notesContainer = document.getElementById("notes-container");
 // === BACKEND URL ===
 const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
 
-// === RENDER NOTES ON SCREEN ===
-function renderNotes(notes = []) {
-  notesContainer.innerHTML = "";
+// local fallback in case backend is offline
+let notes = [];
 
+// === RENDER NOTES ===
+function renderNotes() {
+  notesContainer.innerHTML = "";
   if (!notes.length) {
     notesContainer.innerHTML = `<p class="empty">No notes yet. Click ＋ to add one!</p>`;
     return;
   }
-
-  notes.forEach((n) => {
-    const note = document.createElement("div");
-    note.classList.add("note");
-    note.textContent = n.text;
-    note.onclick = () => deleteNote(n.id);
-    notesContainer.appendChild(note);
+  notes.forEach((note, index) => {
+    const noteEl = document.createElement("div");
+    noteEl.classList.add("note");
+    noteEl.textContent = note.text || note; // supports both string and object
+    noteEl.onclick = () => deleteNote(note.id || index);
+    notesContainer.appendChild(noteEl);
   });
 }
 
-// === FETCH ALL NOTES ===
+// === LOAD NOTES FROM BACKEND ===
 async function loadNotes() {
   try {
     const res = await fetch(`${API_BASE}/notes`);
     const data = await res.json();
-    renderNotes(data);
+    notes = data || [];
+    renderNotes();
   } catch (err) {
     console.error("Failed to load notes:", err);
+    // fallback: load local storage notes if backend is unavailable
+    notes = JSON.parse(localStorage.getItem("notes")) || [];
+    renderNotes();
   }
 }
 
-// === ADD A NEW NOTE ===
-async function addNote() {
-  const noteText = noteInput.value.trim();
-  if (!noteText) return alert("Please write something!");
+// === SAVE NOTE (TO BACKEND + LOCAL FALLBACK) ===
+saveBtn.onclick = async () => {
+  const text = noteInput.value.trim();
+  if (!text) return;
 
-  const note = {
+  const newNote = {
     id: Date.now().toString(),
-    text: noteText,
+    text,
     created_at: new Date().toISOString(),
     user: "demo-user",
   };
 
+  // 1️⃣ Save to backend
   try {
     await fetch(`${API_BASE}/notes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(note),
+      body: JSON.stringify(newNote),
     });
-
-    noteInput.value = "";
-    modal.classList.add("hidden");
-    await loadNotes(); // refresh notes after saving
+    console.log("✅ Sent to backend:", newNote);
   } catch (err) {
-    console.error("Error adding note:", err);
+    console.warn("⚠️ Backend save failed, storing locally:", err);
   }
-}
 
-// === DELETE NOTE (OPTIONAL BACKEND FEATURE) ===
+  // 2️⃣ Local copy (for immediate render)
+  notes.push(newNote);
+  localStorage.setItem("notes", JSON.stringify(notes));
+  renderNotes();
+
+  // 3️⃣ Reset modal
+  noteInput.value = "";
+  modal.classList.add("hidden");
+};
+
+// === DELETE NOTE (OPTIONAL BACKEND SUPPORT) ===
 async function deleteNote(id) {
-  if (!confirm("Delete this note?")) return;
+  const confirmed = confirm("Delete this note?");
+  if (!confirmed) return;
+
+  // Remove locally
+  notes = notes.filter((n) => n.id !== id);
+  localStorage.setItem("notes", JSON.stringify(notes));
+  renderNotes();
+
+  // Remove from backend
   try {
     await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
-    await loadNotes();
+    console.log("🗑️ Deleted from backend:", id);
   } catch (err) {
-    console.error("Error deleting note:", err);
+    console.warn("⚠️ Backend delete failed:", err);
   }
 }
 
 // === MODAL CONTROLS ===
-addBtn.addEventListener("click", () => {
+addBtn.onclick = () => {
   modal.classList.remove("hidden");
   noteInput.focus();
-});
-
-cancelBtn.addEventListener("click", () => {
-  modal.classList.add("hidden");
-  noteInput.value = "";
-});
-
-saveBtn.addEventListener("click", async () => {
-  await addNote();
-});
-
-noteInput.addEventListener("keydown", async (e) => {
-  if (e.key === "Escape") modal.classList.add("hidden");
-  if (e.key === "Enter" && e.shiftKey) {
-    e.preventDefault();
-    await addNote();
-  }
-});
-
-// === PLACEHOLDER BUTTONS ===
-groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
-digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
-
-// === INITIAL LOAD ===
-document.addEventListener("DOMContentLoaded", loadNotes);
+}
