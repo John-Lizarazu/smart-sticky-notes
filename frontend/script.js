@@ -1,3 +1,4 @@
+// === ELEMENT REFERENCES ===
 const addBtn = document.getElementById("addBtn");
 const groupBtn = document.getElementById("groupBtn");
 const digestBtn = document.getElementById("digestBtn");
@@ -7,56 +8,41 @@ const cancelBtn = document.getElementById("cancelNote");
 const noteInput = document.getElementById("noteInput");
 const notesContainer = document.getElementById("notes-container");
 
-let notes = JSON.parse(localStorage.getItem("notes")) || [];
+// === BACKEND URL ===
+const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
 
-function renderNotes() {
+// === RENDER NOTES ON SCREEN ===
+function renderNotes(notes = []) {
   notesContainer.innerHTML = "";
-  notes.forEach((text, index) => {
+
+  if (!notes.length) {
+    notesContainer.innerHTML = `<p class="empty">No notes yet. Click ＋ to add one!</p>`;
+    return;
+  }
+
+  notes.forEach((n) => {
     const note = document.createElement("div");
     note.classList.add("note");
-    note.textContent = text;
-    note.onclick = () => deleteNote(index);
+    note.textContent = n.text;
+    note.onclick = () => deleteNote(n.id);
     notesContainer.appendChild(note);
   });
 }
 
-function deleteNote(index) {
-  if (confirm("Delete this note?")) {
-    notes.splice(index, 1);
-    saveNotes();
+// === FETCH ALL NOTES ===
+async function loadNotes() {
+  try {
+    const res = await fetch(`${API_BASE}/notes`);
+    const data = await res.json();
+    renderNotes(data);
+  } catch (err) {
+    console.error("Failed to load notes:", err);
   }
 }
 
-function saveNotes() {
-  localStorage.setItem("notes", JSON.stringify(notes));
-  renderNotes();
-}
-
-addBtn.onclick = () => {
-  modal.classList.remove("hidden");
-  noteInput.focus();
-};
-
-cancelBtn.onclick = () => {
-  modal.classList.add("hidden");
-  noteInput.value = "";
-};
-
-saveBtn.onclick = () => {
-  const text = noteInput.value.trim();
-  if (text) {
-    notes.push(text);
-    saveNotes();
-    noteInput.value = "";
-    modal.classList.add("hidden");
-  }
-};
-
-const API_BASE = "https://lfq9k0uldd.execute-api.us-east-1.amazonaws.com/Prod";
-
-// Create a new note
+// === ADD A NEW NOTE ===
 async function addNote() {
-  const noteText = document.getElementById("noteInput").value.trim();
+  const noteText = noteInput.value.trim();
   if (!noteText) return alert("Please write something!");
 
   const note = {
@@ -66,57 +52,58 @@ async function addNote() {
     user: "demo-user",
   };
 
-  await fetch(`${API_BASE}/notes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(note),
-  });
+  try {
+    await fetch(`${API_BASE}/notes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(note),
+    });
 
-  document.getElementById("noteInput").value = "";
-  await loadNotes();
+    noteInput.value = "";
+    modal.classList.add("hidden");
+    await loadNotes(); // refresh notes after saving
+  } catch (err) {
+    console.error("Error adding note:", err);
+  }
 }
 
-// Get all notes
-async function loadNotes() {
-  const res = await fetch(`${API_BASE}/notes`);
-  const data = await res.json();
-  renderNotes(data);
+// === DELETE NOTE (OPTIONAL BACKEND FEATURE) ===
+async function deleteNote(id) {
+  if (!confirm("Delete this note?")) return;
+  try {
+    await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
+    await loadNotes();
+  } catch (err) {
+    console.error("Error deleting note:", err);
+  }
 }
 
-// Load all notes when the page first loads
-document.addEventListener("DOMContentLoaded", () => {
-  loadNotes(); // fetch notes from your API Gateway backend
-});
-
-// --- Modal Controls ---
-const addBtn = document.getElementById("addBtn");
-const modal = document.getElementById("noteModal");
-const cancelNote = document.getElementById("cancelNote");
-const saveNote = document.getElementById("saveNote");
-
+// === MODAL CONTROLS ===
 addBtn.addEventListener("click", () => {
   modal.classList.remove("hidden");
+  noteInput.focus();
 });
 
-cancelNote.addEventListener("click", () => {
+cancelBtn.addEventListener("click", () => {
   modal.classList.add("hidden");
+  noteInput.value = "";
 });
 
-saveNote.addEventListener("click", async () => {
-  await addNote();  // calls the addNote() function we defined earlier
-  modal.classList.add("hidden");
+saveBtn.addEventListener("click", async () => {
+  await addNote();
 });
 
-document.getElementById("noteInput").addEventListener("keydown", async (e) => {
+noteInput.addEventListener("keydown", async (e) => {
   if (e.key === "Escape") modal.classList.add("hidden");
   if (e.key === "Enter" && e.shiftKey) {
     e.preventDefault();
     await addNote();
-    modal.classList.add("hidden");
   }
 });
 
+// === PLACEHOLDER BUTTONS ===
 groupBtn.onclick = () => alert("✨ Grouping notes (agent feature coming soon!)");
 digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
-renderNotes();
+// === INITIAL LOAD ===
+document.addEventListener("DOMContentLoaded", loadNotes);
