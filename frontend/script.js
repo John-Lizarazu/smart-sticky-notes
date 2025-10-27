@@ -204,32 +204,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === GROUP NOTES ===
   groupBtn.onclick = async () => {
-    alert("✨ Grouping your notes — please wait...");
+  alert("✨ Grouping your notes — please wait...");
 
-    try {
-      const res = await fetch(`${API_BASE}/notes/group`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes }),
-      });
+  try {
+    const res = await fetch(`${API_BASE}/notes/group`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notes }),
+    });
 
-      const data = await res.json();
-      console.log("🤖 AI Grouping Result:", data);
+    const data = await res.json();
+    console.log("🤖 AI Grouping Result:", data);
 
-      const categories = data?.grouped?.categories;
-      if (!categories || !Array.isArray(categories)) {
-        alert("⚠️ AI grouping response didn’t contain valid categories.");
-        return;
-      }
-
-      groupedCategories = categories;
-      renderGroupedAndUngrouped();
-      alert("✅ Grouping complete!");
-    } catch (err) {
-      console.error("Group Notes error:", err);
-      alert("❌ Failed to group notes — check console for details.");
+    const categories = data?.grouped?.categories;
+    if (!categories || !Array.isArray(categories)) {
+      alert("⚠️ AI grouping response didn’t contain valid categories. Check CloudWatch logs.");
+      return;
     }
-  };
+
+    // ✅ Store grouped categories
+    groupedCategories = categories;
+
+    // ✅ Remove grouped notes from main notes list
+    const groupedTexts = new Set(categories.flatMap((c) => c.notes.map((t) => t.toLowerCase())));
+    notes = notes.filter((n) => !groupedTexts.has(n.text.toLowerCase()));
+    localStorage.setItem("notes", JSON.stringify(notes));
+
+    renderGroupedAndUngrouped();
+    alert("✅ Grouping complete!");
+  } catch (err) {
+    console.error("Group Notes error:", err);
+    alert("❌ Failed to group notes — check console for details.");
+  }
+};
 
   digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
