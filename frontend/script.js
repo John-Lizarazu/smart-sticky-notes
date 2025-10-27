@@ -12,24 +12,104 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteInput = document.getElementById("noteInput");
   const notesContainer = document.getElementById("notes-container");
 
-  // Local notes cache (for instant UI updates)
   let notes = [];
+  let groupedCategories = null; // persist grouping
 
-  // === RENDER NOTES ===
+  // === RENDER DEFAULT NOTES ===
   function renderNotes() {
+    if (groupedCategories) {
+      renderGroupedAndUngrouped();
+      return;
+    }
+
     notesContainer.innerHTML = "";
     if (!notes.length) {
       notesContainer.innerHTML = `<p class="empty">No notes yet. Click ＋ to add one!</p>`;
       return;
     }
 
+    const grid = document.createElement("div");
+    grid.classList.add("note-grid");
+    grid.style.display = "flex";
+    grid.style.flexWrap = "wrap";
+    grid.style.justifyContent = "center";
+    grid.style.gap = "1rem";
+
     notes.forEach((note) => {
       const noteEl = document.createElement("div");
       noteEl.classList.add("note");
-      noteEl.textContent = note.text || note;
+      noteEl.textContent = note.text;
       noteEl.onclick = () => deleteNote(note.id);
-      notesContainer.appendChild(noteEl);
+      grid.appendChild(noteEl);
     });
+
+    notesContainer.appendChild(grid);
+  }
+
+  // === RENDER GROUPED + NEW NOTES ===
+  function renderGroupedAndUngrouped() {
+    notesContainer.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("hybrid-wrapper");
+
+    // --- GROUPED HEADER ---
+    const groupedHeader = document.createElement("h2");
+    groupedHeader.textContent = "🗂️ Grouped Notes";
+    groupedHeader.classList.add("section-title");
+    wrapper.appendChild(groupedHeader);
+
+    // --- GROUPED CATEGORIES ---
+    const groupedRow = document.createElement("div");
+    groupedRow.classList.add("grouped-row");
+
+    groupedCategories.forEach((cat) => {
+      const col = document.createElement("div");
+      col.classList.add("category-col");
+
+      const title = document.createElement("h3");
+      title.textContent = cat.topic;
+      col.appendChild(title);
+
+      const grid = document.createElement("div");
+      grid.classList.add("note-grid");
+      cat.notes.forEach((noteText) => {
+        const card = document.createElement("div");
+        card.classList.add("note");
+        card.textContent = noteText;
+        grid.appendChild(card);
+      });
+
+      col.appendChild(grid);
+      groupedRow.appendChild(col);
+    });
+
+    wrapper.appendChild(groupedRow);
+
+    // --- NEW NOTES ROW ---
+    const groupedTexts = new Set(groupedCategories.flatMap((c) => c.notes));
+    const ungroupedNotes = notes.filter((n) => !groupedTexts.has(n.text));
+
+    if (ungroupedNotes.length) {
+      const newHeader = document.createElement("h2");
+      newHeader.textContent = "🆕 New Notes";
+      newHeader.classList.add("section-title");
+      wrapper.appendChild(newHeader);
+
+      const newNotesRow = document.createElement("div");
+      newNotesRow.classList.add("new-notes-row");
+
+      ungroupedNotes.forEach((note) => {
+        const noteEl = document.createElement("div");
+        noteEl.classList.add("note");
+        noteEl.textContent = note.text;
+        newNotesRow.appendChild(noteEl);
+      });
+
+      wrapper.appendChild(newNotesRow);
+    }
+
+    notesContainer.appendChild(wrapper);
   }
 
   // === LOAD NOTES FROM BACKEND ===
@@ -46,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === SAVE NOTE TO BACKEND ===
+  // === SAVE NOTE ===
   async function saveNote() {
     const text = noteInput.value.trim();
     if (!text) return alert("Please write something!");
@@ -69,12 +149,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("⚠️ Backend save failed, storing locally:", err);
     }
 
-    // Update UI immediately
     notes.push(newNote);
     localStorage.setItem("notes", JSON.stringify(notes));
-    renderNotes();
 
-    // Reset modal
+    // If grouped view is active, refresh hybrid layout
+    if (groupedCategories) renderGroupedAndUngrouped();
+    else renderNotes();
+
     noteInput.value = "";
     modal.classList.add("hidden");
   }
@@ -86,7 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     notes = notes.filter((n) => n.id !== id);
     localStorage.setItem("notes", JSON.stringify(notes));
-    renderNotes();
+    if (groupedCategories) renderGroupedAndUngrouped();
+    else renderNotes();
 
     try {
       await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
@@ -96,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // === MODAL + BUTTON LOGIC ===
+  // === MODAL HANDLING ===
   addBtn.onclick = () => {
     modal.classList.remove("hidden");
     noteInput.focus();
@@ -111,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await saveNote();
   };
 
-  // === KEYBOARD SHORTCUTS ===
+  // === SHORTCUTS ===
   noteInput.addEventListener("keydown", async (e) => {
     if (e.key === "Escape") modal.classList.add("hidden");
     if (e.key === "Enter" && e.shiftKey) {
@@ -120,77 +202,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === PLACEHOLDER BUTTONS ===
+  // === GROUP NOTES ===
   groupBtn.onclick = async () => {
-  alert("✨ Grouping your notes — please wait...");
+    alert("✨ Grouping your notes — please wait...");
 
-  try {
-    const res = await fetch(`${API_BASE}/notes/group`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes }),
-    });
-
-    const data = await res.json();
-    console.log("🤖 AI Grouping Result:", data);
-
-    const categories = data?.grouped?.categories;
-    if (!categories || !Array.isArray(categories)) {
-      alert("⚠️ AI grouping response didn’t contain valid categories. Check CloudWatch logs.");
-      return;
-    }
-
-    // ✅ Clear old notes
-    notesContainer.innerHTML = "";
-
-    // === Create grouped layout ===
-    const groupedWrapper = document.createElement("div");
-    groupedWrapper.classList.add("grouped-wrapper");
-    groupedWrapper.innerHTML = `<h2 style="margin-bottom:1rem;">🗂️ Grouped Notes</h2>`;
-
-    categories.forEach((cat) => {
-      const section = document.createElement("section");
-      section.classList.add("category-section");
-      section.style.marginBottom = "2rem";
-
-      // Category title
-      const title = document.createElement("h3");
-      title.textContent = cat.topic;
-      title.style.marginBottom = "1rem";
-      title.style.color = "#333";
-
-      // Notes grid under each category
-      const grid = document.createElement("div");
-      grid.classList.add("category-grid");
-      grid.style.display = "grid";
-      grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(200px, 1fr))";
-      grid.style.gap = "1rem";
-
-      cat.notes.forEach((noteText) => {
-        const card = document.createElement("div");
-        card.classList.add("note");
-        card.textContent = noteText;
-        card.style.background = "white";
-        card.style.borderRadius = "10px";
-        card.style.padding = "1rem";
-        card.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-        card.style.cursor = "pointer";
-        card.onclick = () => alert(`📝 ${noteText}`);
-        grid.appendChild(card);
+    try {
+      const res = await fetch(`${API_BASE}/notes/group`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes }),
       });
 
-      section.appendChild(title);
-      section.appendChild(grid);
-      groupedWrapper.appendChild(section);
-    });
+      const data = await res.json();
+      console.log("🤖 AI Grouping Result:", data);
 
-    notesContainer.appendChild(groupedWrapper);
-    alert("✅ Grouping complete! Scroll down to view grouped sticky notes.");
-  } catch (err) {
-    console.error("Group Notes error:", err);
-    alert("❌ Failed to group notes — check console for details.");
-  }
-};
+      const categories = data?.grouped?.categories;
+      if (!categories || !Array.isArray(categories)) {
+        alert("⚠️ AI grouping response didn’t contain valid categories.");
+        return;
+      }
+
+      groupedCategories = categories;
+      renderGroupedAndUngrouped();
+      alert("✅ Grouping complete!");
+    } catch (err) {
+      console.error("Group Notes error:", err);
+      alert("❌ Failed to group notes — check console for details.");
+    }
+  };
 
   digestBtn.onclick = () => alert("☀️ Daily Digest (coming soon!)");
 
