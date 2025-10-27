@@ -17,19 +17,20 @@
     <!-- Sticky notes appear here -->
   </main>
 
-  <div class="floating-buttons">
-    <button id="groupBtn">✨ Group Notes</button>
-    <button id="digestBtn">☀️ Daily Digest</button>
-    <button id="addBtn">＋</button>
-  </div>
+  <div class="controls">
+  <button id="groupBtn">✨ Group Notes</button>
+  <button id="digestBtn">🌞 Daily Digest</button>
+  <button id="addBtn">＋</button>
+</div>
 
-  <!-- Note Modal -->
-  <div class="modal hidden" id="noteModal">
-    <div class="modal-content">
-      <textarea id="noteInput" placeholder="Type your thought..."></textarea>
-      <div class="modal-actions">
-        <button id="saveNote">Save</button>
-        <button id="cancelNote">Cancel</button>
+<div id="noteModal" class="hidden">
+  <textarea id="noteInput" placeholder="Add a note..."></textarea>
+  <div>
+    <button id="saveNote">Save</button>
+    <button id="cancelNote">Cancel</button>
+  </div>
+</div>
+
       </div>
     </div>
   </div>
