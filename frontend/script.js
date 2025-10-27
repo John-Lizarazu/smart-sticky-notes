@@ -161,22 +161,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === DELETE NOTE ===
-  async function deleteNote(id) {
-    const confirmed = confirm("Delete this note?");
-    if (!confirmed) return;
+async function deleteNote(id) {
+  const confirmed = confirm("Delete this note?");
+  if (!confirmed) return;
 
-    notes = notes.filter((n) => n.id !== id);
-    localStorage.setItem("notes", JSON.stringify(notes));
-    if (groupedCategories) renderGroupedAndUngrouped();
-    else renderNotes();
+  // Remove from both grouped + ungrouped if found
+  notes = notes.filter((n) => n.id !== id);
 
-    try {
-      await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
-      console.log("🗑️ Deleted from backend:", id);
-    } catch (err) {
-      console.warn("⚠️ Backend delete failed:", err);
-    }
+  if (groupedCategories) {
+    groupedCategories.forEach((cat) => {
+      cat.notes = cat.notes.filter((text) => text.id !== id && text !== id);
+    });
   }
+
+  localStorage.setItem("notes", JSON.stringify(notes));
+  renderGroupedAndUngrouped();
+
+  try {
+    await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
+    console.log("🗑️ Deleted from backend:", id);
+  } catch (err) {
+    console.warn("⚠️ Backend delete failed:", err);
+  }
+}
 
   // === MODAL HANDLING ===
   addBtn.onclick = () => {
@@ -203,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // === GROUP NOTES ===
-  groupBtn.onclick = async () => {
+groupBtn.onclick = async () => {
   alert("✨ Grouping your notes — please wait...");
 
   try {
@@ -216,17 +223,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await res.json();
     console.log("🤖 AI Grouping Result:", data);
 
-    const categories = data?.grouped?.categories;
+    // Handle flexible API shapes (data.grouped or data.groups)
+    const categories =
+      data?.grouped?.categories ||
+      data?.categories ||
+      data?.groups ||
+      null;
+
     if (!categories || !Array.isArray(categories)) {
       alert("⚠️ AI grouping response didn’t contain valid categories. Check CloudWatch logs.");
       return;
     }
 
-    // ✅ Store grouped categories
+    // Store grouped categories
     groupedCategories = categories;
 
-    // ✅ Remove grouped notes from main notes list
-    const groupedTexts = new Set(categories.flatMap((c) => c.notes.map((t) => t.toLowerCase())));
+    // Remove grouped notes from main list
+    const groupedTexts = new Set(
+      categories.flatMap((c) => c.notes.map((t) => t.toLowerCase()))
+    );
     notes = notes.filter((n) => !groupedTexts.has(n.text.toLowerCase()));
     localStorage.setItem("notes", JSON.stringify(notes));
 
