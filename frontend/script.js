@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (ungroupedNotes.length) {
       const newHeader = document.createElement("h2");
-      newHeader.textContent = "🆕 New Notes";
+      newHeader.textContent = "New Notes";
       newHeader.classList.add("section-title");
       wrapper.appendChild(newHeader);
 
