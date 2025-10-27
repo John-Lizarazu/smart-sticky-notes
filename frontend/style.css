@@ -1,179 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
-:root {
-  --bg: #f4f7fa;
-  --note-bg: rgba(255, 255, 255, 0.75);
-  --primary: #6378ff;
-  --accent: #b8c0ff;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
-
-* {
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Lazy+Dog&family=Comic+Neue:wght@400;700&display=swap');
 
 body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: var(--bg);
-  color: #2d2d2d;
-  overflow-x: hidden;
-}
-
-header {
-  text-align: center;
-  padding: 2rem 1rem 1rem;
-}
-
-h1 {
-  margin-bottom: 0.3rem;
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.tagline {
-  font-size: 1rem;
-  color: #666;
-}
-
-#notes-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
-}
-
-.note {
-  background: var(--note-bg);
-  backdrop-filter: blur(8px);
-  border-radius: 1rem;
-  padding: 1rem;
-  min-height: 150px;
-  box-shadow: 0 4px 20px var(--shadow);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.note:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 24px var(--shadow);
-}
-
-.floating-buttons {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.floating-buttons button {
-  border: none;
-  border-radius: 50px;
-  padding: 0.8rem 1.2rem;
-  background: var(--primary);
-  color: white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  box-shadow: 0 4px 10px var(--shadow);
-  transition: all 0.2s;
-}
-
-.floating-buttons button:hover {
-  transform: translateY(-3px);
-  background: var(--accent);
-}
-
-#addBtn {
-  font-size: 1.6rem;
-  border-radius: 50%;
-  width: 3.2rem;
-  height: 3.2rem;
-  padding: 0;
-  background: var(--primary);
-}
-
-/* Modal styling */
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 6px 20px var(--shadow);
-}
-
-#noteInput {
-  width: 100%;
-  min-height: 120px;
-  border: none;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-  font-size: 1rem;
-  background: #f7f8fa;
-  border-radius: 0.5rem;
-  padding: 0.8rem;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.modal-actions button {
-  border: none;
-  background: var(--primary);
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.modal-actions button:hover {
-  background: var(--accent);
-}
-
-.category-section h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-}
-
-.note {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.note:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Lazy+Dog&family=Handlee&family=Comic+Neue:wght@400;700&display=swap');
-
-body {
-  font-family: 'Lazy Dog', 'Handlee', 'Comic Neue', sans-serif;
-  background-color: #f8fafc;
-  color: #333;
+  font-family: 'Lazy Dog', 'Comic Neue', sans-serif;
+  background-color: #fafbff;
+  color: #2b2b2b;
   text-align: center;
   margin: 0;
   padding: 2rem 1rem 6rem;
@@ -181,87 +11,116 @@ body {
 
 h1 {
   font-family: 'Lazy Dog', cursive;
-  font-size: 2.2rem;
-  color: #4a64f5;
-  margin-bottom: 0.25rem;
+  font-size: 2.4rem;
+  color: #5673f5;
+  margin-bottom: 0.4rem;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: #6c757d;
+  color: #6c6f7f;
   margin-bottom: 2rem;
 }
 
-.hybrid-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
+.section-title {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  color: #444;
+  text-align: left;
+  width: 90%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* === GROUPED ROW === */
+/* --- CATEGORY ROW --- */
 .grouped-row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  padding: 0 2rem 1rem;
+  scroll-behavior: smooth;
 }
 
+.grouped-row::-webkit-scrollbar {
+  height: 8px;
+}
+
+.grouped-row::-webkit-scrollbar-thumb {
+  background-color: #cdd5ff;
+  border-radius: 10px;
+}
+
+/* --- CATEGORY CARDS --- */
 .category-col {
+  flex: 0 0 260px;
   background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 1rem 1.5rem;
-  width: 260px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 24px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .category-col:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  border-color: #dbe0ff;
 }
 
 .category-col h3 {
   font-size: 1.1rem;
-  margin-bottom: 1rem;
   color: #333;
+  margin-bottom: 1rem;
 }
 
-/* === NOTE CARDS === */
+/* --- NOTES --- */
 .note {
-  background: #fefefe;
-  border-radius: 14px;
+  background: #fffdf9;
+  border-radius: 16px;
   padding: 0.8rem;
-  margin: 0.4rem 0;
+  margin-bottom: 0.8rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: left;
   font-size: 0.95rem;
-  word-wrap: break-word;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .note:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* === NEW NOTES ROW === */
+/* --- NEW NOTES ROW --- */
 .new-notes-row {
-  margin-top: 2rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.new-notes-row h3 {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #333;
+.new-notes-row .note {
+  width: 220px;
 }
 
-/* === FLOATING BUTTONS (unchanged) === */
+/* --- Floating Buttons --- */
 button {
   font-family: inherit;
+  border-radius: 40px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .grouped-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .category-col {
+    width: 90%;
+    flex: 1 1 90%;
+  }
 }
