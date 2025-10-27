@@ -134,35 +134,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await res.json();
     console.log("🤖 AI Grouping Result:", data);
 
-    // Check correct structure
     const categories = data?.grouped?.categories;
     if (!categories || !Array.isArray(categories)) {
       alert("⚠️ AI grouping response didn’t contain valid categories. Check CloudWatch logs.");
       return;
     }
 
-    // ✅ Display grouped notes directly in the UI
-    const groupedContainer = document.createElement("div");
-    groupedContainer.innerHTML = "<h2>🗂️ Grouped Notes</h2>";
+    // ✅ Clear old notes
+    notesContainer.innerHTML = "";
+
+    // === Create grouped layout ===
+    const groupedWrapper = document.createElement("div");
+    groupedWrapper.classList.add("grouped-wrapper");
+    groupedWrapper.innerHTML = `<h2 style="margin-bottom:1rem;">🗂️ Grouped Notes</h2>`;
 
     categories.forEach((cat) => {
-      const div = document.createElement("div");
-      div.className = "group";
-      div.style.margin = "12px 0";
-      div.innerHTML = `
-        <h3 style="color:#333;margin-bottom:6px;">${cat.topic}</h3>
-        <ul style="padding-left:20px;">
-          ${cat.notes.map((n) => `<li>${n}</li>`).join("")}
-        </ul>
-      `;
-      groupedContainer.appendChild(div);
+      const section = document.createElement("section");
+      section.classList.add("category-section");
+      section.style.marginBottom = "2rem";
+
+      // Category title
+      const title = document.createElement("h3");
+      title.textContent = cat.topic;
+      title.style.marginBottom = "1rem";
+      title.style.color = "#333";
+
+      // Notes grid under each category
+      const grid = document.createElement("div");
+      grid.classList.add("category-grid");
+      grid.style.display = "grid";
+      grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(200px, 1fr))";
+      grid.style.gap = "1rem";
+
+      cat.notes.forEach((noteText) => {
+        const card = document.createElement("div");
+        card.classList.add("note");
+        card.textContent = noteText;
+        card.style.background = "white";
+        card.style.borderRadius = "10px";
+        card.style.padding = "1rem";
+        card.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+        card.style.cursor = "pointer";
+        card.onclick = () => alert(`📝 ${noteText}`);
+        grid.appendChild(card);
+      });
+
+      section.appendChild(title);
+      section.appendChild(grid);
+      groupedWrapper.appendChild(section);
     });
 
-    // Replace the notes view with grouped categories
-    notesContainer.innerHTML = "";
-    notesContainer.appendChild(groupedContainer);
-
-    alert("✅ Grouping complete! Scroll down to view grouped notes.");
+    notesContainer.appendChild(groupedWrapper);
+    alert("✅ Grouping complete! Scroll down to view grouped sticky notes.");
   } catch (err) {
     console.error("Group Notes error:", err);
     alert("❌ Failed to group notes — check console for details.");
