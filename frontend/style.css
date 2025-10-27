@@ -1,98 +1,95 @@
-@import url('https://fonts.googleapis.com/css2?family=Lazy+Dog&family=Comic+Neue:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Poppins:wght@400;600&display=swap');
 
 body {
-  font-family: 'Lazy Dog', 'Comic Neue', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #fafbff;
   color: #2b2b2b;
   text-align: center;
   margin: 0;
-  padding: 2rem 1rem 6rem;
+  padding: 2.5rem 1rem 7rem;
 }
 
 h1 {
-  font-family: 'Lazy Dog', cursive;
+  font-family: 'Kalam', cursive;
   font-size: 2.4rem;
-  color: #5673f5;
-  margin-bottom: 0.4rem;
+  color: #4a64f5;
+  margin-bottom: 0.25rem;
 }
 
 .subtitle {
   font-size: 1rem;
   color: #6c6f7f;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .section-title {
   font-size: 1.2rem;
-  margin: 1rem 0;
+  font-weight: 600;
   color: #444;
   text-align: left;
-  width: 90%;
+  width: 100%;
   max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 2rem auto 1rem auto;
 }
 
-/* --- CATEGORY ROW --- */
+/* --- WRAPPER --- */
+.hybrid-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+/* --- GROUPED ROW --- */
 .grouped-row {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  justify-content: flex-start;
-  gap: 1.5rem;
-  padding: 0 2rem 1rem;
-  scroll-behavior: smooth;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.grouped-row::-webkit-scrollbar {
-  height: 8px;
-}
-
-.grouped-row::-webkit-scrollbar-thumb {
-  background-color: #cdd5ff;
-  border-radius: 10px;
-}
-
-/* --- CATEGORY CARDS --- */
+/* --- CATEGORY CARD --- */
 .category-col {
   flex: 0 0 260px;
-  background: #fff;
+  background: #ffffff;
   border-radius: 24px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .category-col:hover {
   transform: translateY(-4px);
-  border-color: #dbe0ff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
 .category-col h3 {
-  font-size: 1.1rem;
-  color: #333;
-  margin-bottom: 1rem;
+  font-family: 'Kalam', cursive;
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: #3d3d3d;
 }
 
-/* --- NOTES --- */
+/* --- NOTES INSIDE CATEGORIES --- */
 .note {
-  background: #fffdf9;
-  border-radius: 16px;
-  padding: 0.8rem;
-  margin-bottom: 0.8rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: #fffef8;
+  border-radius: 14px;
+  padding: 0.7rem 0.8rem;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   font-size: 0.95rem;
   text-align: left;
+  cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .note:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* --- NEW NOTES ROW --- */
+/* --- NEW NOTES --- */
 .new-notes-row {
   display: flex;
   flex-wrap: wrap;
@@ -104,23 +101,29 @@ h1 {
 
 .new-notes-row .note {
   width: 220px;
+  background: #fffefa;
 }
 
-/* --- Floating Buttons --- */
+/* --- BUTTON STYLES --- */
 button {
   font-family: inherit;
   border-radius: 40px;
+  font-weight: 500;
 }
 
-/* --- Responsive --- */
+/* --- MODAL --- */
+#noteModal textarea {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+}
+
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .grouped-row {
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
-
   .category-col {
     width: 90%;
-    flex: 1 1 90%;
   }
 }
