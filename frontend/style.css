@@ -1,46 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap');
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #fafbff;
+  font-family: 'Fredoka', sans-serif;
+  background-color: #fcfdff;
   color: #2b2b2b;
   text-align: center;
   margin: 0;
-  padding: 2.5rem 1rem 7rem;
+  padding: 2rem 1rem 8rem;
 }
 
+/* --- HEADER --- */
 h1 {
-  font-family: 'Kalam', cursive;
-  font-size: 2.4rem;
-  color: #4a64f5;
-  margin-bottom: 0.25rem;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 2.8rem;
+  color: #4d66f5;
+  margin-bottom: 0.3rem;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: #6c6f7f;
-  margin-bottom: 2.5rem;
+  color: #7b7e8b;
+  margin-bottom: 2.8rem;
 }
 
+/* --- CONTAINERS --- */
 .section-title {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #444;
   text-align: left;
-  width: 100%;
   max-width: 1100px;
-  margin: 2rem auto 1rem auto;
+  margin: 2.5rem auto 1rem auto;
+  color: #444;
 }
 
-/* --- WRAPPER --- */
 .hybrid-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
   text-align: center;
+  padding: 0 1rem;
 }
 
-/* --- GROUPED ROW --- */
+/* --- GROUPED LAYOUT --- */
 .grouped-row {
   display: flex;
   flex-wrap: wrap;
@@ -49,81 +50,132 @@ h1 {
   margin-bottom: 3rem;
 }
 
-/* --- CATEGORY CARD --- */
 .category-col {
-  flex: 0 0 260px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.2rem 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  flex: 0 0 270px;
+  background: #fff;
+  border-radius: 25px;
+  padding: 1.4rem 1rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid #f1f3ff;
 }
 
 .category-col:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .category-col h3 {
-  font-family: 'Kalam', cursive;
   font-size: 1.2rem;
   margin-bottom: 0.8rem;
-  color: #3d3d3d;
+  color: #3b3b3b;
 }
 
-/* --- NOTES INSIDE CATEGORIES --- */
+/* --- NOTES --- */
 .note {
-  background: #fffef8;
+  background: #fffdf8;
   border-radius: 14px;
-  padding: 0.7rem 0.8rem;
-  margin-bottom: 0.6rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.8rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  font-size: 0.95rem;
+  font-size: 1rem;
   text-align: left;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .note:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* --- NEW NOTES --- */
 .new-notes-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
-  max-width: 1100px;
-  margin: 0 auto;
+  gap: 1.2rem;
+  margin-top: 2rem;
 }
 
-.new-notes-row .note {
-  width: 220px;
-  background: #fffefa;
-}
-
-/* --- BUTTON STYLES --- */
+/* --- BUTTONS --- */
 button {
-  font-family: inherit;
-  border-radius: 40px;
+  font-family: 'Fredoka', sans-serif;
   font-weight: 500;
+  border-radius: 40px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.95rem;
+  border: 2px solid #000;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: #f5f7ff;
+}
+
+#addBtn,
+#groupBtn,
+#digestBtn {
+  position: fixed;
+  right: 2rem;
+  z-index: 10;
+}
+
+#addBtn {
+  bottom: 2rem;
+  background: #4b63f5;
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+#groupBtn {
+  bottom: 8rem;
+}
+
+#digestBtn {
+  bottom: 5rem;
 }
 
 /* --- MODAL --- */
-#noteModal textarea {
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.95rem;
+#noteModal {
+  position: fixed;
+  bottom: 9rem;
+  right: 2rem;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  width: 220px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 768px) {
-  .grouped-row {
-    flex-direction: column;
-    align-items: center;
-  }
-  .category-col {
-    width: 90%;
-  }
+#noteModal textarea {
+  width: 90%;
+  height: 80px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  padding: 0.5rem;
+  font-family: 'Fredoka', sans-serif;
+  resize: none;
+}
+
+#noteModal button {
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+}
+
+/* --- SHOW MODAL --- */
+#noteModal:not(.hidden) {
+  display: flex;
 }
