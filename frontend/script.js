@@ -123,26 +123,46 @@ document.addEventListener("DOMContentLoaded", () => {
   // === PLACEHOLDER BUTTONS ===
   groupBtn.onclick = async () => {
   alert("✨ Grouping your notes — please wait...");
+
   try {
     const res = await fetch(`${API_BASE}/notes/group`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ notes }),
     });
+
     const data = await res.json();
     console.log("🤖 AI Grouping Result:", data);
 
-    // Display the grouped notes neatly in the console for now
-    if (data.groups) {
-      console.log("📁 Grouped Notes:");
-      data.groups.forEach((group, i) => {
-        console.log(`\nGroup ${i + 1}: ${group.title}`);
-        group.items.forEach((note) => console.log(`- ${note}`));
-      });
-      alert("✅ Grouping complete! Check the console for results.");
-    } else {
-      alert("⚠️ AI grouping response didn’t contain groups. Check CloudWatch logs.");
+    // Check correct structure
+    const categories = data?.grouped?.categories;
+    if (!categories || !Array.isArray(categories)) {
+      alert("⚠️ AI grouping response didn’t contain valid categories. Check CloudWatch logs.");
+      return;
     }
+
+    // ✅ Display grouped notes directly in the UI
+    const groupedContainer = document.createElement("div");
+    groupedContainer.innerHTML = "<h2>🗂️ Grouped Notes</h2>";
+
+    categories.forEach((cat) => {
+      const div = document.createElement("div");
+      div.className = "group";
+      div.style.margin = "12px 0";
+      div.innerHTML = `
+        <h3 style="color:#333;margin-bottom:6px;">${cat.topic}</h3>
+        <ul style="padding-left:20px;">
+          ${cat.notes.map((n) => `<li>${n}</li>`).join("")}
+        </ul>
+      `;
+      groupedContainer.appendChild(div);
+    });
+
+    // Replace the notes view with grouped categories
+    notesContainer.innerHTML = "";
+    notesContainer.appendChild(groupedContainer);
+
+    alert("✅ Grouping complete! Scroll down to view grouped notes.");
   } catch (err) {
     console.error("Group Notes error:", err);
     alert("❌ Failed to group notes — check console for details.");
