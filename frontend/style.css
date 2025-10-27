@@ -167,3 +167,101 @@ h1 {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Lazy+Dog&family=Handlee&family=Comic+Neue:wght@400;700&display=swap');
+
+body {
+  font-family: 'Lazy Dog', 'Handlee', 'Comic Neue', sans-serif;
+  background-color: #f8fafc;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 2rem 1rem 6rem;
+}
+
+h1 {
+  font-family: 'Lazy Dog', cursive;
+  font-size: 2.2rem;
+  color: #4a64f5;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+.hybrid-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === GROUPED ROW === */
+.grouped-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.category-col {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+  width: 260px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-col:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.category-col h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* === NOTE CARDS === */
+.note {
+  background: #fefefe;
+  border-radius: 14px;
+  padding: 0.8rem;
+  margin: 0.4rem 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+}
+
+.note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === NEW NOTES ROW === */
+.new-notes-row {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.new-notes-row h3 {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* === FLOATING BUTTONS (unchanged) === */
+button {
+  font-family: inherit;
+}
